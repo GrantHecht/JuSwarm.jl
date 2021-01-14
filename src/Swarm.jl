@@ -45,7 +45,7 @@ Base.lastindex(S::Swarm) = S[length(S)]
 
 function fvalcheck(S::Swarm)
     n = length(S.Particles)
-    for i in 1:n
+    @inbounds for i in 1:n
         if ifinf(S[i].fx) || isnan(S[i].fx)
             throw(ErrorException("Objective function returned Inf or NaN!"))
         end
@@ -55,10 +55,10 @@ end
 function setgbest!(S::Swarm)
     n = length(S)
     updated = false
-    for i in 1:n
+    @inbounds for i in 1:n
         if S[i].fp < S.b
-            S.b = copy(S[i].fp)
-            S.d = copy(S[i].p)
+            S.b = S[i].fp
+            S.d = deepcopy(S[i].p)
             updated = true
         end
     end
@@ -77,7 +77,7 @@ end
 function updatevelocities!(S::Swarm)
     n = length(S.Particles)
     m = length(S.d)
-    for i in 1:n
+    @inbounds for i in 1:n
         # Chose random subset of N Particles not including i
         ws = Weights([float(j != i) for j in 1:n])
         samp = sample(1:n, ws, S.N; replace=false, ordered=false)
@@ -85,10 +85,10 @@ function updatevelocities!(S::Swarm)
         # Determine fbest(S)
         fbest = Inf
         best  = 0
-        for j in samp
+        @inbounds for j in samp
             if S[j].fp < fbest
-                fbest = copy(S[j].fp)
-                best = copy(j)
+                fbest = S[j].fp
+                best = j
             end
         end
 
@@ -101,10 +101,25 @@ end
 
 function step!(S::Swarm)
     n = length(S.Particles)
-    for i in 1:n
+    @inbounds for i in 1:n
         S[i].x = S[i].x .+ S[i].v
     end
 end  
+
+function enforcebnds!(S::Swarm, Opts::PSOOptions)
+    n = length(S)
+    @inbounds for i in 1:n
+        @inbounds for j in 1:Opts.NDims
+            if S[i].x[j] > Opts.UpperBounds[j] 
+                S[i].x[j] = Opts.UpperBounds[j]
+                S[i].v[j] = 0.0
+            elseif S[i].x[j] < Opts.LowerBounds[j]
+                S[i].x[j] = Opts.LowerBounds[j]
+                S[i].v[j] = 0.0
+            end
+        end
+    end
+end
 
 function feval!(f, S::Swarm, Opts::PSOOptions)
 
@@ -114,7 +129,7 @@ function feval!(f, S::Swarm, Opts::PSOOptions)
             S[i].fx = f(S[i].x)
         end
     else
-        for i in 1:Opts.SwarmSize
+        @inbounds for i in 1:Opts.SwarmSize
             S[i].fx = f(S[i].x)
         end
     end
@@ -125,10 +140,10 @@ function feval!(f, S::Swarm, Opts::PSOOptions)
     end
 
     # Update Each Particles Best Objective Function Value and its Location
-    for i in 1:Opts.SwarmSize
+    @inbounds for i in 1:Opts.SwarmSize
         if S[i].fx < S[i].fp
-            S[i].p = copy(S[i].x)
-            S[i].fp = copy(S[i].fx)
+            S[i].p = deepcopy(S[i].x)
+            S[i].fp = S[i].fx
         end
     end
 end
@@ -137,11 +152,12 @@ function plotparticles(S::Swarm)
     n = length(S)
     x = zeros(n)
     y = zeros(n)
-    for i in 1:n
+    @inbounds for i in 1:n
         x[i] = S[i].x[1]
         y[i] = S[i].x[2]
     end
-    display(plot(x,y,seriestype = :scatter))
+
+    display(plot(x,y,seriestype = :scatter,  xlim = (-1000, 1000), ylim = (-1000, 1000)))
 end
 
 

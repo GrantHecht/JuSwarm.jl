@@ -15,6 +15,8 @@ mutable struct PSOOptions{L,M}
     InertiaRange::SVector{2}
     InitialSwarmMatrix::SMatrix{M,L}
     InitialSwarmSpan::SVector{M}
+    LowerBounds::SVector{M}
+    UpperBounds::SVector{M}
     MaxIterations::Int
     MaxStallIterations::Int
     MaxStallTime::AbstractFloat
@@ -30,31 +32,38 @@ end
 
 function PSOOptions(NDims; Display = "iter", DisplayInterval = 1, FunctionTolerance = 1.0e-6, FunValCheck = "off", 
     InertiaRange = SVector{2}([0.1, 1.1]), InitialSwarmMatrix = nothing, InitialSwarmSpan = nothing, 
-    MaxIterations = -1, MaxStallIterations = 20, MaxStallTime = Inf64, MaxTime = Inf64, MinNeighborsFraction = 0.25, 
-    ObjectiveLimit = -Inf64, SelfAdjustmentWeight = 1.49, SocialAdjustmentWeight = 1.49, SwarmSize = -1, UseParallel = false)
+    LowerBounds = nothing, UpperBounds = nothing, MaxIterations = -1, MaxStallIterations = 20, MaxStallTime = Inf64, 
+    MaxTime = Inf64, MinNeighborsFraction = 0.25, ObjectiveLimit = -Inf64, SelfAdjustmentWeight = 1.49, 
+    SocialAdjustmentWeight = 1.49, SwarmSize = -1, UseParallel = false)
 
-if MaxIterations == -1
-MaxIterations = 200*NDims
-end
-if SwarmSize == -1
-SwarmSize = min(100, 10*NDims)
-end
-if InitialSwarmMatrix === nothing
-    InitialSwarmMatrix = SMatrix{NDims, 2}(NaN .* ones(NDims, 2))
-end
-if InitialSwarmSpan === nothing
-    InitialSwarmSpan = SVector{NDims}(2000 .* ones(NDims))
-end
-if UseParallel == true && Threads.nthreads() < 2
-    throw(ArgumentError("More than one thread must be active to use parallel computing."))
-end
-if InertiaRange[1] > InertiaRange[2]
-    throw(ArgumentError("InertiaRange[2] must be greater than InertiaRange[1]!"))
-end
+    if MaxIterations == -1
+    MaxIterations = 200*NDims
+    end
+    if SwarmSize == -1
+    SwarmSize = min(100, 10*NDims)
+    end
+    if InitialSwarmMatrix === nothing
+        InitialSwarmMatrix = SMatrix{NDims, 2}(fill(NaN, (NDims, 2)))
+    end
+    if InitialSwarmSpan === nothing
+        InitialSwarmSpan = SVector{NDims}(fill(2000, (NDims, 1)))
+    end
+    if LowerBounds === nothing
+        LowerBounds = SVector{NDims}(fill(-Inf, (NDims, 1)))
+    end
+    if UpperBounds === nothing
+        UpperBounds = SVector{NDims}(fill(Inf, (NDims, 1)))
+    end
+    if UseParallel == true && Threads.nthreads() < 2
+        throw(ArgumentError("More than one thread must be active to use parallel computing."))
+    end
+    if InertiaRange[1] > InertiaRange[2]
+        throw(ArgumentError("InertiaRange[2] must be greater than InertiaRange[1]!"))
+    end
 
-M = NDims
-L = size(InitialSwarmMatrix)[2]
-PSOOptions{L,M}(NDims, Display, DisplayInterval, FunctionTolerance, FunValCheck, InertiaRange, InitialSwarmMatrix,
-InitialSwarmSpan, MaxIterations, MaxStallIterations, MaxStallTime, MaxTime, MinNeighborsFraction, ObjectiveLimit, 
-SelfAdjustmentWeight, SocialAdjustmentWeight, SwarmSize, UseParallel)
+    M = NDims
+    L = size(InitialSwarmMatrix)[2]
+    PSOOptions{L,M}(NDims, Display, DisplayInterval, FunctionTolerance, FunValCheck, InertiaRange, InitialSwarmMatrix,
+    InitialSwarmSpan, LowerBounds, UpperBounds, MaxIterations, MaxStallIterations, MaxStallTime, MaxTime, 
+    MinNeighborsFraction, ObjectiveLimit, SelfAdjustmentWeight, SocialAdjustmentWeight, SwarmSize, UseParallel)
 end
