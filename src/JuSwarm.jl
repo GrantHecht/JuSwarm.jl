@@ -13,6 +13,7 @@ include("Particle.jl")
 include("Swarm.jl")
 include("initswarmuniform.jl")
 include("psoptimize.jl")
+include("PSOSolution.jl")
 
 export PSOOptions
 export psoptimize

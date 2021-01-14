@@ -108,16 +108,25 @@ end
 
 function enforcebnds!(S::Swarm, Opts::PSOOptions)
     n = length(S)
+    tempx = MVector{Opts.NDims}(zeros(Opts.NDims))
+    tempv = MVector{Opts.NDims}(zeros(Opts.NDims))
     @inbounds for i in 1:n
+        tempx .* 0.0
+        tempv .* 0.0
         @inbounds for j in 1:Opts.NDims
             if S[i].x[j] > Opts.UpperBounds[j] 
-                S[i].x[j] = Opts.UpperBounds[j]
-                S[i].v[j] = 0.0
+                tempx[j] = Opts.UpperBounds[j]
+                tempv[j] = 0.0
             elseif S[i].x[j] < Opts.LowerBounds[j]
-                S[i].x[j] = Opts.LowerBounds[j]
-                S[i].v[j] = 0.0
+                tempx[j] = Opts.LowerBounds[j]
+                tempv[j] = 0.0
+            else
+                tempx[j] = S[i].x[j]
+                tempv[j] = S[i].v[j] 
             end
         end
+        S[i].x = SVector{Opts.NDims}(tempx)
+        S[i].v = SVector{Opts.NDims}(tempv)
     end
 end
 

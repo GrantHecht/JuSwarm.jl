@@ -90,5 +90,5 @@ function psoptimize(f, Opts::PSOOptions)
         end
     end
 
-    return swarm
+    return PSOSolution(swarm, swarm.b, swarm.d, Iterations, time() - Time0, 1)
 end

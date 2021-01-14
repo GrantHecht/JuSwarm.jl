@@ -1,5 +1,5 @@
 
-mutable struct PSOOptions{L,M}
+struct PSOOptions{L,M}
 
     # PSO Options similar to MATLABs PSO implemtation options
 
@@ -31,16 +31,16 @@ mutable struct PSOOptions{L,M}
 end
 
 function PSOOptions(NDims; Display = "iter", DisplayInterval = 1, FunctionTolerance = 1.0e-6, FunValCheck = "off", 
-    InertiaRange = SVector{2}([0.1, 1.1]), InitialSwarmMatrix = nothing, InitialSwarmSpan = nothing, 
-    LowerBounds = nothing, UpperBounds = nothing, MaxIterations = -1, MaxStallIterations = 20, MaxStallTime = Inf64, 
-    MaxTime = Inf64, MinNeighborsFraction = 0.25, ObjectiveLimit = -Inf64, SelfAdjustmentWeight = 1.49, 
-    SocialAdjustmentWeight = 1.49, SwarmSize = -1, UseParallel = false)
+                    InertiaRange = SVector{2}([0.1, 1.1]), InitialSwarmMatrix = nothing, InitialSwarmSpan = nothing, 
+                    LowerBounds = nothing, UpperBounds = nothing, MaxIterations = -1, MaxStallIterations = 20, 
+                    MaxStallTime = Inf64, MaxTime = Inf, MinNeighborsFraction = 0.25, ObjectiveLimit = -Inf, 
+                    SelfAdjustmentWeight = 1.49, SocialAdjustmentWeight = 1.49, SwarmSize = -1, UseParallel = false)
 
     if MaxIterations == -1
-    MaxIterations = 200*NDims
+        MaxIterations = 200*NDims
     end
     if SwarmSize == -1
-    SwarmSize = min(100, 10*NDims)
+        SwarmSize = min(100, 10*NDims)
     end
     if InitialSwarmMatrix === nothing
         InitialSwarmMatrix = SMatrix{NDims, 2}(fill(NaN, (NDims, 2)))
@@ -64,6 +64,6 @@ function PSOOptions(NDims; Display = "iter", DisplayInterval = 1, FunctionTolera
     M = NDims
     L = size(InitialSwarmMatrix)[2]
     PSOOptions{L,M}(NDims, Display, DisplayInterval, FunctionTolerance, FunValCheck, InertiaRange, InitialSwarmMatrix,
-    InitialSwarmSpan, LowerBounds, UpperBounds, MaxIterations, MaxStallIterations, MaxStallTime, MaxTime, 
-    MinNeighborsFraction, ObjectiveLimit, SelfAdjustmentWeight, SocialAdjustmentWeight, SwarmSize, UseParallel)
+                    InitialSwarmSpan, LowerBounds, UpperBounds, MaxIterations, MaxStallIterations, MaxStallTime, MaxTime, 
+                    MinNeighborsFraction, ObjectiveLimit, SelfAdjustmentWeight, SocialAdjustmentWeight, SwarmSize, UseParallel)
 end
