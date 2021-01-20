@@ -1,10 +1,11 @@
+
 function psoptimize(f, Opts::PSOOptions)
 
     # Initialize Parameters
     Time0 = time()
     Iterations = 0
 
-    StallTime0 = copy(Time0)
+    StallTime0 = Time0
     StallIterations = 0
     FStall = Inf
 
@@ -18,9 +19,6 @@ function psoptimize(f, Opts::PSOOptions)
     stop = false
     while !stop
 
-        # TEMP: Plot Particles
-        #plotparticles(swarm)
-
         # Update Iteration Counter
         Iterations += 1
         
@@ -30,7 +28,10 @@ function psoptimize(f, Opts::PSOOptions)
         # Update Positions
         step!(swarm)
 
-        # Enforce Bounds (not implemented)
+        # Enforce Bounds
+        if !(all(isinf.(Opts.LowerBounds)) && all(isinf.(Opts.UpperBounds)))
+            enforcebnds!(swarm, Opts)
+        end
 
         # Evaluate Objective Function
         feval!(f, swarm, Opts)
@@ -41,29 +42,29 @@ function psoptimize(f, Opts::PSOOptions)
         # Update Stall Counter and Neighborhood
         if flag
             swarm.c = max(0, swarm.c - 1)
-            swarm.N = copy(MinNeighborhoodSize)
-
-            # Update Inertia
-            if swarm.c < 2
-                swarm.W *= 2.0
-            elseif swarm.c > 5
-                swarm.W /= 2.0
-            end
-
-            # Ensure Inertia is in InertiaRange
-            if swarm.W > Opts.InertiaRange[2]
-                swarm.W = copy(Opts.InertiaRange[2])
-            elseif swarm.W < Opts.InertiaRange[1]
-                swarm.W = copy(Opts.InertiaRange[1])
-            end
+            swarm.N = MinNeighborhoodSize
         else
             swarm.c += 1
             swarm.N = min(swarm.N + MinNeighborhoodSize, Opts.SwarmSize - 1)
         end
 
+        # Update Inertia
+        if swarm.c < 2
+            swarm.W *= 2.0
+        elseif swarm.c > 5
+            swarm.W /= 2.0
+        end
+
+        # Ensure Inertia is in InertiaRange
+        if swarm.W > Opts.InertiaRange[2]
+            swarm.W = Opts.InertiaRange[2]
+        elseif swarm.W < Opts.InertiaRange[1]
+            swarm.W = Opts.InertiaRange[1]
+        end
+
         # Track Stalling
         if FStall - swarm.b > Opts.FunctionTolerance
-            FStall = copy(swarm.b)
+            FStall = swarm.b
             StallIterations = 0
             StallTime0 = time()
         else
@@ -71,15 +72,15 @@ function psoptimize(f, Opts::PSOOptions)
         end
 
         # Stopping Criteria
-        if StallIterations > Opts.MaxStallIterations
+        if StallIterations >= Opts.MaxStallIterations
             stop = true
-        elseif Iterations > Opts.MaxStallIterations
+        elseif Iterations >= Opts.MaxIterations
             stop = true
-        elseif swarm.b < Opts.ObjectiveLimit
+        elseif swarm.b <= Opts.ObjectiveLimit
             stop = true
-        elseif time() - StallTime0 > Opts.MaxStallTime
+        elseif time() - StallTime0 >= Opts.MaxStallTime
             stop = true
-        elseif time() - Time0 > Opts.MaxTime
+        elseif time() - Time0 >= Opts.MaxTime
             stop = true
         end
 
@@ -89,5 +90,5 @@ function psoptimize(f, Opts::PSOOptions)
         end
     end
 
-    return swarm
+    return PSOSolution(swarm, swarm.b, swarm.d, Iterations, time() - Time0, 1)
 end
