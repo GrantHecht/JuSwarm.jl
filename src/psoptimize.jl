@@ -29,7 +29,7 @@ function psoptimize(f, Opts::PSOOptions)
         step!(swarm)
 
         # Enforce Bounds
-        if !all(isinf.(Opts.LowerBounds)) && !all(isinf.(Opts.UpperBounds))
+        if !(all(isinf.(Opts.LowerBounds)) && all(isinf.(Opts.UpperBounds)))
             enforcebnds!(swarm, Opts)
         end
 

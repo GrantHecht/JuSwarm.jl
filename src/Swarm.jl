@@ -157,18 +157,6 @@ function feval!(f, S::Swarm, Opts::PSOOptions)
     end
 end
 
-function plotparticles(S::Swarm)
-    n = length(S)
-    x = zeros(n)
-    y = zeros(n)
-    @inbounds for i in 1:n
-        x[i] = S[i].x[1]
-        y[i] = S[i].x[2]
-    end
-
-    display(plot(x,y,seriestype = :scatter,  xlim = (-1000, 1000), ylim = (-1000, 1000)))
-end
-
 
 
 
