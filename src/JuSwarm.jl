@@ -5,6 +5,7 @@ using StaticArrays
 using Format
 using StatsBase
 using LinearAlgebra
+using Optim
 
 # Includes
 include("PSOOptions.jl")

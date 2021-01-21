@@ -1,4 +1,5 @@
 using JuSwarm, StaticArrays, Test
+import Optim
 
 function rosenbrockfunc(x::AbstractVector)
     sum = 0.0
@@ -9,10 +10,15 @@ function rosenbrockfunc(x::AbstractVector)
 end
 
 N = 2
-opts = PSOOptions(N; SwarmSize = 150, 
+opts = PSOOptions(N; SwarmSize = 1000, 
+                     HybridOptimizer = Optim.LBFGS(),
                      Display = "none",
                      UseParallel = true)
 
 sol = psoptimize(rosenbrockfunc,opts)
 
-@test sol.fbest <= 1.0e-6
+@test sol.fbest <= sol.fbestPSO
+
+@test sol.fbestPSO <= 1.0e-6
+
+@test sol.fbest <= 1.0e-10
