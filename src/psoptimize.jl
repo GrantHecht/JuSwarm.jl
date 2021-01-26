@@ -96,8 +96,15 @@ function psoptimize(f, Opts::PSOOptions)
         end
 
         res = optimize(f, MVector{Opts.NDims}(swarm.d), Opts.HybridOptimizer, Opts.HybridOptimizerOpts)
-        return PSOSolution(swarm, Optim.minimum(res), SVector{Opts.NDims}(Optim.minimizer(res)), 
-               Iterations, time() - Time0, ExitFlag, res, swarm.b, swarm.d)
+        if Optim.minimum(res) < swarm.b
+            fbest = Optim.minimum(res)
+            xbest = SVector{Opts.NDims}(Optim.minimizer(res))
+        else
+            fbest = swarm.b
+            xbest = swarm.d
+        end
+
+        return PSOSolution(swarm, fbest, xbest, Iterations, time() - Time0, ExitFlag, res, swarm.b, swarm.d)
 
     else
         return PSOSolution(swarm, swarm.b, swarm.d, Iterations, time() - Time0, ExitFlag)
