@@ -95,7 +95,7 @@ function psoptimize(f, Opts::PSOOptions)
             println("Beginning optimization with hybrid function...")
         end
 
-        res = optimize(f, MVector{Opts.NDims}(swarm.d), Opts.HybridOptimizer, Opts.HybridOptimizerOpts)
+        res = optimize(f, MVector{Opts.NDims}(swarm.d), Opts.HybridOptimizer, Opts.HybridOptimizerOpts; autodiff = Opts.HybridAutoDiff)
         if Optim.minimum(res) < swarm.b
             fbest = Optim.minimum(res)
             xbest = SVector{Opts.NDims}(Optim.minimizer(res))
