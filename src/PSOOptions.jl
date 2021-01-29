@@ -8,7 +8,7 @@ struct PSOOptions{L,M}
     FunctionTolerance::Real
     FunValCheck::String
     InertiaRange::SVector{2}
-    InitialSwarmMatrix::SMatrix{M,L}
+    InitialSwarmMatrix::SizedMatrix{M,L}
     InitialSwarmSpan::SVector{M}
     LowerBounds::SVector{M}
     UpperBounds::SVector{M}
@@ -47,7 +47,7 @@ function PSOOptions(NDims; Display = "iter", DisplayInterval = 1, FunctionTolera
         SwarmSize = min(100, 10*NDims)
     end
     if InitialSwarmMatrix === nothing
-        InitialSwarmMatrix = SMatrix{NDims, 2}(fill(NaN, (NDims, 2)))
+        InitialSwarmMatrix = SizedMatrix{NDims, 2}(fill(NaN, (NDims, 2)))
     end
     if InitialSwarmSpan === nothing
         InitialSwarmSpan = SVector{NDims}(fill(2000, (NDims, 1)))
