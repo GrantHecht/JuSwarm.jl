@@ -37,7 +37,7 @@ fx = sol.fbest
 
 JuSwarm.jl is implimented similarly to MATLAB's PSO implimentation (particleswarm.m) and contains many of the same options.
 For the time being, please reference MATLAB's particleswarm.m documentation to see available options and thier discriptions. 
-Additionally, please reference the JuSwarm.jl tests for more examples of its usage.
+Additionally, feel free to reference the JuSwarm.jl tests for more examples of its usage.
 
 
 
