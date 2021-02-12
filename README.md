@@ -9,19 +9,24 @@
 JuSwarm.jl is a package for solving nonlinear multivariate optimization problems using the gradient-free Partical Swarm Optimization (PSO) algorithm. 
 
 # Simple Example
-Considering the simple multivariate sphere function of n-diamentions:
+Considering the multivariate Rastrigin Function of n-diamentions:
 ```
-f(x) = sum(x.^2)
+f(x) = 10*length(x) + sum(x.^2 - 10*cos.(2*π.*x)
 ```
-The minimum can be found using JuSwarm.jl with a hybrid optimizer provided by Optim.jl as follows (considering the 10-diamention sphere function):
+The minimum can be found using JuSwarm.jl with a hybrid optimizer provided by Optim.jl as follows (considering the 2-diamention rastrigin function):
 ```
 using JuSwarm
 using Optim
+using StaticArrays
 
-f(x) = sum(x.^2)
+f(x) = 10*length(x) + sum(x.^2 - 10*cos.(2*π.*x))
 
-Num_Of_Dims = 10
-PSOoptions = PSOOptions(Num_Of_Dims; SwarmSize = 50, HybridOptimizer = Optim.LBFGS())
+Num_Of_Dims = 2
+PSOoptions = PSOOptions(Num_Of_Dims; 
+                        SwarmSize = 200,
+                        LowerBounds = SVector{Num_Of_Dims}(fill(-5.12, Num_Of_Dims, 1)),
+                        UpperBounds = SVector{Num_Of_Dims}(fill(5.12, Num_Of_Dims, 1)),
+                        HybridOptimizer = Optim.LBFGS())
 
 sol = psoptimize(f, PSOoptions)
 
