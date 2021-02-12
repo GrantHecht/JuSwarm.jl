@@ -13,7 +13,7 @@ Considering the multivariate Rastrigin Function of n-diamentions:
 ```
 f(x) = 10*length(x) + sum(x.^2 - 10*cos.(2*π.*x)
 ```
-The minimum can be found using JuSwarm.jl with a hybrid optimizer provided by Optim.jl as follows (considering the 2-diamention rastrigin function):
+The minimum can be found using JuSwarm.jl with a hybrid optimizer provided by Optim.jl as follows (considering the 2-diamention Rastrigin function):
 ```
 using JuSwarm
 using Optim
