@@ -13,7 +13,7 @@ Considering the simple multivariate sphere function of n-diamentions:
 ```
 f(x) = sum(x.^2)
 ```
-The minimum can be found using the JuSwarm.jl as follows (considering the 10-diamention sphere function):
+The minimum can be found using JuSwarm.jl with a hybrid optimizer provided by Optim.jl as follows (considering the 10-diamention sphere function):
 ```
 using JuSwarm
 using Optim
@@ -33,7 +33,7 @@ fx = sol.fbest
 ```
 
 # Available Options
-!!!Need to update this portion of the readme!!!
+!!! Need to update this portion of the readme !!!
 
 JuSwarm.jl is implimented similarly to MATLAB's PSO implimentation (particleswarm.m) and contains many of the same options.
 For the time being, please reference MATLAB's particleswarm.m documentation to see available options and thier discriptions. 
