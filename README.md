@@ -5,7 +5,7 @@
 [![Coverage](https://codecov.io/gh/GrantHecht/JuSwarm.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/GrantHecht/JuSwarm.jl)
 [![Coverage](https://coveralls.io/repos/github/GrantHecht/JuSwarm.jl/badge.svg?branch=master)](https://coveralls.io/github/GrantHecht/JuSwarm.jl?branch=master)
 
-# Gradient Free Nonlinear Optimization with Particle Swarm
+# Gradient Free Nonlinear Optimization with PSO
 JuSwarm.jl is a package for solving nonlinear multivariate optimization problems using the gradient-free Partical Swarm Optimization (PSO) algorithm. 
 
 # Simple Example
