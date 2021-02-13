@@ -1,4 +1,4 @@
-# JuSwarm
+# JuSwarm.jl
 
 [![Build Status](https://travis-ci.com/GrantHecht/JuSwarm.jl.svg?branch=master)](https://travis-ci.com/GrantHecht/JuSwarm.jl)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/GrantHecht/JuSwarm.jl?svg=true)](https://ci.appveyor.com/project/GrantHecht/JuSwarm-jl)
