@@ -16,8 +16,8 @@ function psoptimize(f, Opts::PSOOptions)
     MinNeighborhoodSize = max(2, floor(Opts.SwarmSize * Opts.MinNeighborsFraction))
 
     # Begin loop
-    stop = false
-    while !stop
+    ExitFlag = 0
+    while ExitFlag == 0
 
         # Update Iteration Counter
         Iterations += 1
@@ -73,15 +73,15 @@ function psoptimize(f, Opts::PSOOptions)
 
         # Stopping Criteria
         if StallIterations >= Opts.MaxStallIterations
-            stop = true
+            ExitFlag = 1
         elseif Iterations >= Opts.MaxIterations
-            stop = true
+            ExitFlag = 2
         elseif swarm.b <= Opts.ObjectiveLimit
-            stop = true
+            ExitFlag = 3
         elseif time() - StallTime0 >= Opts.MaxStallTime
-            stop = true
+            ExitFlag = 4
         elseif time() - Time0 >= Opts.MaxTime
-            stop = true
+            ExitFlag = 5
         end
 
         # Output Status
@@ -90,5 +90,23 @@ function psoptimize(f, Opts::PSOOptions)
         end
     end
 
-    return PSOSolution(swarm, swarm.b, swarm.d, Iterations, time() - Time0, 1)
+    if Opts.HybridFcn
+        if Opts.Display == "iter"
+            println("Beginning optimization with hybrid function...")
+        end
+
+        res = optimize(f, MVector{Opts.NDims}(swarm.d), Opts.HybridOptimizer, Opts.HybridOptimizerOpts; autodiff = Opts.HybridAutoDiff)
+        if Optim.minimum(res) < swarm.b
+            fbest = Optim.minimum(res)
+            xbest = SVector{Opts.NDims}(Optim.minimizer(res))
+        else
+            fbest = swarm.b
+            xbest = swarm.d
+        end
+
+        return PSOSolution(swarm, fbest, xbest, Iterations, time() - Time0, ExitFlag, res, swarm.b, swarm.d)
+
+    else
+        return PSOSolution(swarm, swarm.b, swarm.d, Iterations, time() - Time0, ExitFlag)
+    end
 end
